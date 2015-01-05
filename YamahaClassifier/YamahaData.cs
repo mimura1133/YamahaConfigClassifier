@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Yamaha_scraping;
@@ -15,7 +17,9 @@ namespace YamahaClassifier
 
         public static void LoadData()
         {
-            using (var fs = File.OpenRead("yamaha.xml"))
+            var directory = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path));
+
+            using (var fs = File.OpenRead(Path.Combine(directory,"yamaha.xml")))
             {
                 var serializer = new XmlSerializer(typeof (YamahaXMLRoot));
                 var data = serializer.Deserialize(fs) as YamahaXMLRoot;

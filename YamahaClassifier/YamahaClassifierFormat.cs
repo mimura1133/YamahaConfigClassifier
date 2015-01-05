@@ -25,7 +25,7 @@ namespace YamahaClassifier
         public YamahaClassifierValidFormat()
         {
             DisplayName = "YamahaClassifierValidFormat"; //human readable version of the name
-            ForegroundColor = Colors.LightSkyBlue;
+            ForegroundColor = Colors.Blue;
         }
     }
 
@@ -60,7 +60,7 @@ namespace YamahaClassifier
         public YamahaClassifierCommentOutFormat()
         {
             DisplayName = "YamahaClassifierCommentOutFormat"; //human readable version of the name
-            ForegroundColor = Colors.LightCyan;
+            ForegroundColor = Colors.Gray;
         }
     }
 
@@ -77,7 +77,7 @@ namespace YamahaClassifier
         public YamahaClassifierKeywordFormat()
         {
             DisplayName = "YamahaClassifierKeywordFormat"; //human readable version of the name
-            ForegroundColor = Colors.LightGreen;
+            ForegroundColor = Colors.DarkGreen;
         }
     }
 
