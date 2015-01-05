@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -11,20 +10,20 @@ namespace YamahaClassifier
 {
 
     #region Provider definition
+
     /// <summary>
-    /// This class causes a classifier to be added to the set of classifiers. Since 
-    /// the content type is set to "text", this classifier applies to all text files
+    ///     This class causes a classifier to be added to the set of classifiers. Since
+    ///     the content type is set to "text", this classifier applies to all text files
     /// </summary>
-    [Export(typeof(IClassifierProvider))]
+    [Export(typeof (IClassifierProvider))]
     [ContentType("yamahaconf")]
     internal class YamahaClassifierProvider : IClassifierProvider
     {
         /// <summary>
-        /// Import the classification registry to be used for getting a reference
-        /// to the custom classification type later.
+        ///     Import the classification registry to be used for getting a reference
+        ///     to the custom classification type later.
         /// </summary>
-        [Import]
-        internal IClassificationTypeRegistryService ClassificationRegistry = null; // Set via MEF
+        [Import] internal IClassificationTypeRegistryService ClassificationRegistry; // Set via MEF
 
         public YamahaClassifierProvider()
         {
@@ -33,21 +32,25 @@ namespace YamahaClassifier
 
         public IClassifier GetClassifier(ITextBuffer buffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty<YamahaClassifier>(delegate { return new YamahaClassifier(ClassificationRegistry); });
+            return
+                buffer.Properties.GetOrCreateSingletonProperty(
+                    delegate { return new YamahaClassifier(ClassificationRegistry); });
         }
     }
+
     #endregion //provider def
 
     #region Classifier
+
     /// <summary>
-    /// Classifier that classifies all text as an instance of the OrinaryClassifierType
+    ///     Classifier that classifies all text as an instance of the OrinaryClassifierType
     /// </summary>
-    class YamahaClassifier : IClassifier
+    internal class YamahaClassifier : IClassifier
     {
-        private IClassificationType _validType;
+        private readonly IClassificationType _commentoutType;
+        private readonly IClassificationType _keywordType;
+        private readonly IClassificationType _validType;
         private IClassificationType _normalType;
-        private IClassificationType _commentoutType;
-        private IClassificationType _keywordType;
 
         internal YamahaClassifier(IClassificationTypeRegistryService registry)
         {
@@ -59,14 +62,14 @@ namespace YamahaClassifier
         }
 
         /// <summary>
-        /// This method scans the given SnapshotSpan for potential matches for this classification.
-        /// In this instance, it classifies everything and returns each span as a new ClassificationSpan.
+        ///     This method scans the given SnapshotSpan for potential matches for this classification.
+        ///     In this instance, it classifies everything and returns each span as a new ClassificationSpan.
         /// </summary>
         /// <param name="trackingSpan">The span currently being classified</param>
         /// <returns>A list of ClassificationSpans that represent spans identified to be of this classification</returns>
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
-            List<ClassificationSpan> classifications = new List<ClassificationSpan>();
+            var classifications = new List<ClassificationSpan>();
             var text = span.GetText();
             int pt = span.Start;
 
@@ -79,7 +82,6 @@ namespace YamahaClassifier
                     text = text.Substring(1);
                 }
                 else break;
-
             }
 
 
@@ -90,12 +92,12 @@ namespace YamahaClassifier
 
             if (text[0] != '#')
             {
-                bool greensw = false;
+                var greensw = false;
                 var split = text.Split(" ".ToCharArray());
-                for (int i = 0; i < split.Length; i++)
+                for (var i = 0; i < split.Length; i++)
                 {
-                    string str = "";
-                    for (int j = 0; j <= i; j++)
+                    var str = "";
+                    for (var j = 0; j <= i; j++)
                     {
                         str += split[j] + " ";
                     }
@@ -137,11 +139,10 @@ namespace YamahaClassifier
             }
 
             //create a list to hold the results
-            
+
 
             return classifications;
         }
-
 #pragma warning disable 67
         // This event gets raised if a non-text change would affect the classification in some way,
         // for example typing /* would cause the classification to change in C# without directly
@@ -149,5 +150,6 @@ namespace YamahaClassifier
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
 #pragma warning restore 67
     }
+
     #endregion //Classifier
 }
