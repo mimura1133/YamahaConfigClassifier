@@ -98,12 +98,13 @@ namespace YamahaClassifier
 
             var retVal = _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             var handled = false;
-            if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
+            if (!typedChar.Equals(char.MinValue) && (char.IsLetter(typedChar) || typedChar == ' '))
             {
                 if (_session == null || _session.IsDismissed) // If there is no active session, bring up completion
                 {
                     TriggerCompletion();
-                    _session.Filter();
+                    if (_session != null)
+                        _session.Filter();
                 }
                 else //the completion session is already active, so just filter
                 {
@@ -150,7 +151,7 @@ namespace YamahaClassifier
                     caretPoint.Value.Snapshot.CreateTrackingPoint(caretPoint.Value.Position, PointTrackingMode.Positive),
                     true);
 
-            //subscribe to the Dismissed event on the session 
+            //subscribe to the Dismissed event on the session
             _session.Dismissed += OnSessionDismissed;
             _session.Start();
         }
